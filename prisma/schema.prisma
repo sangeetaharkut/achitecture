@@ -1,0 +1,59 @@
+// Prisma Schema
+// Database schema following Domain-Driven Design principles
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  category    String
+  stock       Int
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  cartItems   CartItem[]
+  
+  @@index([category])
+  @@index([price])
+  @@map("products")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  items     CartItem[]
+  total     Float      @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int
+  price     Float
+  subtotal  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+  @@map("cart_items")
+}
