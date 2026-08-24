@@ -25,6 +25,8 @@ src/
 │   │   │   └── product.service.ts
 │   │   ├── di/                 # Dependency injection
 │   │   │   └── container.ts
+        ├── types
+            └── products.types.ts   #types
 │   │   └── index.ts            # Barrel export
 │   │
 │   └── cart/                   # Cart feature
@@ -34,11 +36,11 @@ src/
 │       │   └── cart.service.ts
 │       ├── di/
 │       │   └── container.ts
+        ├── types/
+│       │   └── cart.types.ts
 │       └── index.ts
 │
 ├── types/                      # Domain types & interfaces
-│   ├── product.types.ts
-│   ├── cart.types.ts
 │   ├── common.types.ts
 │   └── index.ts
 │
@@ -58,7 +60,7 @@ prisma/
 └── schema.prisma              # Database schema
 ```
 
-## 🎯 Key Patterns
+##  Key Patterns
 
 ### 1. Repository Pattern
 Abstracts database operations:
@@ -89,7 +91,7 @@ Clean public API:
 import { ProductContainer } from '@/features/products';
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Install Dependencies
 ```bash
@@ -133,7 +135,7 @@ Open [http://localhost:3000](http://localhost:3000)
 - `POST /api/cart` - Add item to cart
 - `DELETE /api/cart` - Clear cart
 
-## 🧪 Example Usage
+##  Example Usage
 
 ### Creating a Product
 ```typescript
@@ -167,7 +169,7 @@ if (result.success) {
 }
 ```
 
-## 🎨 Benefits
+## Benefits
 
 ### Maintainability
 - Features are self-contained and easy to locate
@@ -189,14 +191,14 @@ if (result.success) {
 - Clear ownership and responsibilities
 - Reduced merge conflicts
 
-## 📚 Learn More
+##  Learn More
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
 - [Repository Pattern](https://martinfowler.com/eaaCatalog/repository.html)
 - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Next.js 16** - React framework with App Router
 - **TypeScript** - Type safety
@@ -204,7 +206,7 @@ if (result.success) {
 - **Tailwind CSS 4** - Styling
 - **PostgreSQL/SQLite** - Database
 
-## 🧪 Testing
+## Testing
 
 ### Unit Tests (Jest + React Testing Library)
 

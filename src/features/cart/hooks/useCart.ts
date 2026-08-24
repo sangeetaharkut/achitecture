@@ -28,7 +28,7 @@ export function useCart(userId: string) {
     const result = await getCartAction(userId);
     
     if (result.success && result.data) {
-      setCart(result.data.cart);
+      setCart(result.data.cart || null);
       setSummary(result.data.summary);
     } else {
       setError(result.error || 'Failed to fetch cart');
