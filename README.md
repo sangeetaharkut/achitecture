@@ -203,3 +203,96 @@ if (result.success) {
 - **Prisma** - Database ORM
 - **Tailwind CSS 4** - Styling
 - **PostgreSQL/SQLite** - Database
+
+## 🧪 Testing
+
+### Unit Tests (Jest + React Testing Library)
+
+```bash
+# Run all unit tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+```
+
+**Example:** 32 comprehensive tests for ProductCard component covering:
+- Rendering and display
+- Stock status indicators
+- Discount calculations
+- Add to cart functionality
+- Loading and error states
+- Accessibility
+
+### E2E Tests (Playwright)
+
+```bash
+# Run E2E tests
+npm run test:e2e
+
+# Interactive UI mode (recommended)
+npm run test:e2e:ui
+
+# Watch tests run in browser
+npm run test:e2e:headed
+
+# Debug mode with step-through
+npm run test:e2e:debug
+
+# View HTML report
+npm run playwright:report
+```
+
+**Coverage:** 18 comprehensive E2E tests including:
+- Homepage navigation
+- Product browsing and filtering
+- Product detail pages
+- Add to cart from card and detail page
+- Cart management (update quantities, remove items)
+- Order summary calculations
+- Complete user journey
+
+See [TESTING.md](TESTING.md) for detailed testing guide.
+
+##  CI/CD - Automated Testing on Every PR
+
+This project runs **Playwright E2E tests automatically** on every Pull Request using GitHub Actions.
+
+### What Runs Automatically
+
+✅ All 18 E2E tests  
+✅ Database setup and seeding  
+✅ Production build validation  
+✅ Test reports uploaded as artifacts
+
+### Setup (One-time)
+
+1. Push code to GitHub:
+```bash
+git add .
+git commit -m "Add CI/CD workflow"
+git push origin main
+```
+
+2. Create a Pull Request - tests run automatically!
+
+### Viewing Test Results
+
+- Go to your PR → **Checks** tab
+- See ✅ or ❌ status for "Playwright Tests"
+- Download artifacts for detailed reports on failure
+
+### Local Testing Before Push
+
+```bash
+# Quick check
+npm run test:e2e
+
+# Full suite with UI
+npm run test:e2e:ui
+```
+
+See [CI-CD-GUIDE.md](CI-CD-GUIDE.md) for complete CI/CD documentation.

@@ -93,6 +93,12 @@ npm run test:e2e:headed
 - Fresh database for each run
 - Seeded with 24 test products
 
+### Environment Variables
+- **DATABASE_URL**: `file:./dev.db` (set in workflow)
+- Configured at job level in `.github/workflows/playwright.yml`
+- No secrets needed for SQLite development database
+- For production databases, use GitHub Secrets (see Security section)
+
 ### Timeout
 - **60 minutes** maximum
 - Typical run: 2-3 minutes
@@ -287,12 +293,23 @@ steps:
 
 ### Secrets Management
 
+For **production databases** or sensitive environment variables, use GitHub Secrets:
+
 ```yaml
-# Add in GitHub Settings → Secrets
+# Add in GitHub Settings → Secrets and Variables → Actions
 - name: Run tests
   env:
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
     API_KEY: ${{ secrets.API_KEY }}
+```
+
+**Note:** This project uses SQLite with `DATABASE_URL: file:./dev.db` which is safe to commit in the workflow file since it's a local file database with no credentials.
+
+For **PostgreSQL/MySQL** in CI, you would use:
+```yaml
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # Example: postgresql://user:password@host:5432/dbname
 ```
 
 ### Dependabot
