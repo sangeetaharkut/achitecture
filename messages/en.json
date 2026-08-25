@@ -1,0 +1,88 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "search": "Search products...",
+    "loading": "Loading...",
+    "error": "Error",
+    "tryAgain": "Try Again",
+    "noResults": "No results found",
+    "welcome": "Welcome"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Shopping Cart",
+    "api": "API Docs"
+  },
+  "product": {
+    "title": "Products",
+    "name": "Product Name",
+    "description": "Description",
+    "price": "Price",
+    "category": "Category",
+    "stock": "Stock",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "lowStock": "Low Stock",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details",
+    "allCategories": "All Categories",
+    "noProducts": "No products found",
+    "searchPlaceholder": "Search products...",
+    "quantity": "Quantity",
+    "added": "✓ Added to cart!",
+    "error": "Failed to add to cart",
+    "available": "{count} available",
+    "breadcrumb": {
+      "home": "Home",
+      "products": "Products"
+    }
+  },
+  "categories": {
+    "electronics": "Electronics",
+    "clothing": "Clothing",
+    "books": "Books",
+    "home": "Home & Garden"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "itemCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}}",
+    "remove": "Remove",
+    "clear": "Clear Cart",
+    "updateQuantity": "Update Quantity",
+    "summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Proceed to Checkout"
+  },
+  "home": {
+    "title": "Next.js Feature-Based Architecture",
+    "subtitle": "Domain-Driven Design with Repository Pattern",
+    "description": "A modern Next.js application demonstrating enterprise architecture patterns including DDD, Repository Pattern, Service Layer, and Dependency Injection.",
+    "features": {
+      "products": {
+        "title": "Browse Products",
+        "description": "Explore our product catalog with filtering and pagination"
+      },
+      "architecture": {
+        "title": "Clean Architecture",
+        "description": "Feature-based folder structure with clear separation of concerns"
+      },
+      "testing": {
+        "title": "Comprehensive Testing",
+        "description": "Unit tests with Jest and E2E tests with Playwright"
+      }
+    },
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "metadata": {
+    "title": "Next.js Architecture Demo",
+    "description": "Enterprise-grade Next.js application with DDD and clean architecture"
+  }
+}

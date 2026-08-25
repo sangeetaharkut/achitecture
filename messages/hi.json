@@ -1,0 +1,88 @@
+{
+  "common": {
+    "home": "होम",
+    "products": "उत्पाद",
+    "cart": "कार्ट",
+    "search": "उत्पाद खोजें...",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "tryAgain": "पुनः प्रयास करें",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "welcome": "स्वागत है"
+  },
+  "navigation": {
+    "home": "होम",
+    "products": "उत्पाद",
+    "cart": "शॉपिंग कार्ट",
+    "api": "एपीआई डॉक्स"
+  },
+  "product": {
+    "title": "उत्पाद",
+    "name": "उत्पाद का नाम",
+    "description": "विवरण",
+    "price": "कीमत",
+    "category": "श्रेणी",
+    "stock": "स्टॉक",
+    "inStock": "स्टॉक में उपलब्ध",
+    "outOfStock": "स्टॉक में नहीं",
+    "lowStock": "कम स्टॉक",
+    "addToCart": "कार्ट में जोड़ें",
+    "viewDetails": "विवरण देखें",
+    "allCategories": "सभी श्रेणियां",
+    "noProducts": "कोई उत्पाद नहीं मिला",
+    "searchPlaceholder": "उत्पाद खोजें...",
+    "quantity": "मात्रा",
+    "added": "✓ कार्ट में जोड़ा गया!",
+    "error": "कार्ट में जोड़ने में विफल",
+    "available": "{count} उपलब्ध",
+    "breadcrumb": {
+      "home": "होम",
+      "products": "उत्पाद"
+    }
+  },
+  "categories": {
+    "electronics": "इलेक्ट्रॉनिक्स",
+    "clothing": "कपड़े",
+    "books": "किताबें",
+    "home": "घर और बगीचा"
+  },
+  "cart": {
+    "title": "शॉपिंग कार्ट",
+    "empty": "आपका कार्ट खाली है",
+    "continueShopping": "खरीदारी जारी रखें",
+    "itemCount": "{count, plural, =0 {कोई आइटम नहीं} =1 {1 आइटम} other {# आइटम}}",
+    "remove": "हटाएं",
+    "clear": "कार्ट खाली करें",
+    "updateQuantity": "मात्रा अपडेट करें",
+    "summary": "ऑर्डर सारांश",
+    "subtotal": "उप-योग",
+    "tax": "कर",
+    "total": "कुल",
+    "checkout": "चेकआउट करें"
+  },
+  "home": {
+    "title": "Next.js फीचर-बेस्ड आर्किटेक्चर",
+    "subtitle": "डोमेन-ड्रिवन डिज़ाइन के साथ रिपॉजिटरी पैटर्न",
+    "description": "एक आधुनिक Next.js एप्लिकेशन जो DDD, रिपॉजिटरी पैटर्न, सर्विस लेयर और डिपेंडेंसी इंजेक्शन सहित एंटरप्राइज आर्किटेक्चर पैटर्न का प्रदर्शन करता है।",
+    "features": {
+      "products": {
+        "title": "उत्पाद ब्राउज़ करें",
+        "description": "फ़िल्टरिंग और पेजिनेशन के साथ हमारा उत्पाद कैटलॉग देखें"
+      },
+      "architecture": {
+        "title": "क्लीन आर्किटेक्चर",
+        "description": "चिंताओं के स्पष्ट विभाजन के साथ फीचर-आधारित फ़ोल्डर संरचना"
+      },
+      "testing": {
+        "title": "व्यापक परीक्षण",
+        "description": "Jest के साथ यूनिट टेस्ट और Playwright के साथ E2E टेस्ट"
+      }
+    },
+    "getStarted": "शुरू करें",
+    "learnMore": "और जानें"
+  },
+  "metadata": {
+    "title": "Next.js आर्किटेक्चर डेमो",
+    "description": "DDD और क्लीन आर्किटेक्चर के साथ एंटरप्राइज-ग्रेड Next.js एप्लिकेशन"
+  }
+}
