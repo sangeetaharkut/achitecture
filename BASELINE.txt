@@ -1,0 +1,63 @@
+=== BASELINE MEASUREMENT - DATE: 2026-08-25 ===
+
+PROJECT: Next.js Feature-Based Architecture with i18n
+
+BUNDLE SIZES (from npm run build output):
+Note: Full bundle analysis requires running: npm run build:analyze
+
+ROUTES:
+- /_not-found: Static
+- /[locale]: Dynamic (en, hi locales)
+- /[locale]/cart: Dynamic
+- /[locale]/products: Dynamic  
+- /[locale]/products/[id]: Dynamic
+- API routes: 3 dynamic endpoints
+
+INITIAL STATE:
+- Next.js version: 16.3.2
+- React version: 19.2.8
+- i18n: next-intl 4.13.7
+- Database: Prisma 5.22.0 + SQLite
+- Testing: Jest + Playwright
+- Styling: Tailwind CSS 4
+
+FEATURES:
+- Internationalization (en/hi) with automatic locale detection
+- Shopping cart with state management
+- Product catalog with filtering
+- Image optimization (Next.js Image)
+- Server Actions
+- Repository pattern + Service layer
+
+NEXT STEPS:
+1. Run: npm run build:analyze
+2. Record client bundle size from analyzer
+3. Run Lighthouse on localhost:3000
+4. Record LCP, CLS, INP metrics
+5. Identify optimization targets
+6. Implement optimizations
+7. Re-measure and compare
+
+TO COMPLETE BASELINE:
+□ Run bundle analyzer (npm run build:analyze)
+□ Record total client bundle size: ___ KB
+□ Record largest dependency: ___ (___ KB)
+□ Run Lighthouse (F12 → Lighthouse)
+□ Record LCP: ___ s
+□ Record CLS: ___
+□ Record INP: ___ ms
+□ Record Performance score: ___ /100
+
+OPTIMIZATION TARGETS:
+[ ] Dynamic imports for heavy components
+[ ] next/script for third-party scripts  
+[ ] Route-level code splitting
+[ ] Image optimization review
+[ ] Font loading optimization
+[ ] Bundle size reduction
+
+GOALS:
+- LCP < 2.5s
+- CLS < 0.1
+- INP < 200ms
+- Performance score > 90/100

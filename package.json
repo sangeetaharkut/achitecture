@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "next experimental-analyze",
+    "build:analyze:webpack": "cross-env ANALYZE=true next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
@@ -27,6 +29,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.3.3",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
@@ -36,6 +39,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
     "jest": "^30.4.2",
