@@ -104,7 +104,7 @@ export function I18nProductList({
       </div>
 
       {/* Pagination */}
-      {products.pagination.totalPages > 1 && (
+      {products.pagination && products.pagination.totalPages > 1 && (
         <div className="mt-8 flex justify-center gap-2">
           <button
             onClick={() => setPage(page - 1)}
