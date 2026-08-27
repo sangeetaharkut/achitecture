@@ -1,17 +1,33 @@
 /**
  * Product Server Actions
- * Server-side functions that can be called from client components
- * Acts as API boundary between client and server
+ * Server-side functions that call DummyJSON API
  */
 
 'use server';
 
-import ProductContainer from '../di/container';
-import { ProductFilter, DiscountRule } from '../types/product.types';
-import { revalidatePath } from 'next/cache';
+import { ProductFilter } from '../types/product.types';
+
+const DUMMYJSON_API = 'https://dummyjson.com';
 
 /**
- * Get paginated products with optional filtering
+ * Map DummyJSON product to our Product type
+ */
+function mapDummyJsonProduct(data: any) {
+  return {
+    id: data.id.toString(),
+    name: data.title,
+    description: data.description,
+    price: data.price,
+    category: data.category,
+    stock: data.stock,
+    imageUrl: data.thumbnail || data.images?.[0] || '',
+    rating: data.rating,
+    brand: data.brand,
+  };
+}
+
+/**
+ * Get paginated products from DummyJSON
  */
 export async function getProductsAction(
   page: number = 1,
@@ -19,10 +35,50 @@ export async function getProductsAction(
   filter?: ProductFilter
 ) {
   try {
-    const service = ProductContainer.getService();
-    const result = await service.getProducts({ page, limit }, filter);
-    return { success: true, data: result };
+    const skip = (page - 1) * limit;
+    let url = `${DUMMYJSON_API}/products?limit=${limit}&skip=${skip}`;
+    
+    // Add category filter if provided
+    if (filter?.category) {
+      url = `${DUMMYJSON_API}/products/category/${filter.category}?limit=${limit}&skip=${skip}`;
+    }
+    
+    console.log('[Server Action] Fetching from:', url);
+    
+    // For development, allow self-signed certificates
+    if (process.env.NODE_ENV === 'development') {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
+    
+    const response = await fetch(url, { 
+      next: { revalidate: 3600 },
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    console.log('[Server Action] Response status:', response.status);
+    
+    if (!response.ok) {
+      console.error(`Failed to fetch from ${url}: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: Failed to fetch products`);
+    }
+    
+    const data = await response.json();
+    console.log('[Server Action] Got', data.products?.length, 'products');
+    
+    return {
+      success: true,
+      data: {
+        data: data.products.map(mapDummyJsonProduct),
+        total: data.total,
+        page,
+        limit,
+        pages: Math.ceil(data.total / limit),
+      }
+    };
   } catch (error) {
+    console.error('getProductsAction error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch products'
@@ -31,18 +87,20 @@ export async function getProductsAction(
 }
 
 /**
- * Get single product by ID
+ * Get single product by ID from DummyJSON
  */
 export async function getProductByIdAction(id: string) {
   try {
-    const service = ProductContainer.getService();
-    const result = await service.getProductById(id);
+    const response = await fetch(`${DUMMYJSON_API}/products/${id}`, {
+      next: { revalidate: 3600 }
+    });
     
-    if (!result.success) {
-      return { success: false, error: result.error?.message };
+    if (!response.ok) {
+      return { success: false, error: 'Product not found' };
     }
     
-    return { success: true, data: result.data };
+    const data = await response.json();
+    return { success: true, data: mapDummyJsonProduct(data) };
   } catch (error) {
     return {
       success: false,
@@ -52,177 +110,138 @@ export async function getProductByIdAction(id: string) {
 }
 
 /**
- * Create new product
+ * Search products by query
  */
-export async function createProductAction(data: {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  stock: number;
-  imageUrl?: string;
-}) {
+export async function searchProductsAction(query: string) {
   try {
-    const service = ProductContainer.getService();
-    const result = await service.createProduct(data);
+    const response = await fetch(`${DUMMYJSON_API}/products/search?q=${encodeURIComponent(query)}`, {
+      next: { revalidate: 3600 }
+    });
     
-    if (!result.success) {
-      return { success: false, error: result.error?.message };
+    if (!response.ok) {
+      throw new Error('Failed to search products');
     }
     
-    revalidatePath('/products');
-    return { success: true, data: result.data };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create product'
-    };
-  }
-}
-
-/**
- * Update existing product
- */
-export async function updateProductAction(
-  id: string,
-  data: {
-    name?: string;
-    description?: string;
-    price?: number;
-    category?: string;
-    stock?: number;
-    imageUrl?: string;
-  }
-) {
-  try {
-    const service = ProductContainer.getService();
-    const result = await service.updateProduct(id, data);
-    
-    if (!result.success) {
-      return { success: false, error: result.error?.message };
-    }
-    
-    revalidatePath('/products');
-    revalidatePath(`/products/${id}`);
-    return { success: true, data: result.data };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to update product'
-    };
-  }
-}
-
-/**
- * Delete product
- */
-export async function deleteProductAction(id: string) {
-  try {
-    const service = ProductContainer.getService();
-    const result = await service.deleteProduct(id);
-    
-    if (!result.success) {
-      return { success: false, error: result.error?.message };
-    }
-    
-    revalidatePath('/products');
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete product'
-    };
-  }
-}
-
-/**
- * Calculate discount for a product
- */
-export async function calculateDiscountAction(
-  productId: string,
-  quantity: number,
-  rule?: DiscountRule
-) {
-  try {
-    const service = ProductContainer.getService();
-    const productResult = await service.getProductById(productId);
-    
-    if (!productResult.success || !productResult.data) {
-      return { success: false, error: 'Product not found' };
-    }
-    
-    const discountedPrice = service.calculateDiscount(productResult.data, quantity, rule);
-    
+    const data = await response.json();
     return {
       success: true,
-      data: {
-        originalPrice: productResult.data.price * quantity,
-        discountedPrice,
-        savings: (productResult.data.price * quantity) - discountedPrice
-      }
+      data: data.products.map(mapDummyJsonProduct)
     };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to calculate discount'
+      error: error instanceof Error ? error.message : 'Failed to search products'
     };
   }
 }
 
 /**
- * Check stock availability
+ * Get all categories
  */
-export async function checkStockAction(productId: string, quantity: number) {
+export async function getCategoriesAction() {
   try {
-    const service = ProductContainer.getService();
-    const available = await service.checkStockAvailability(productId, quantity);
+    const response = await fetch(`${DUMMYJSON_API}/products/categories`, {
+      next: { revalidate: 86400 } // Cache for 24 hours
+    });
     
-    return { success: true, data: { available } };
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+    
+    const categories = await response.json();
+    return {
+      success: true,
+      data: categories
+    };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to check stock'
+      error: error instanceof Error ? error.message : 'Failed to fetch categories'
     };
   }
 }
 
 /**
- * Get products with calculated discounts
+ * Get products with discounts (simplified - applies discount client-side)
  */
 export async function getProductsWithDiscountsAction(
   page: number = 1,
   limit: number = 10,
   filter?: ProductFilter,
-  discountRule?: DiscountRule
+  discountRule?: any
 ) {
   try {
-    const service = ProductContainer.getService();
-    const result = await service.getProducts({ page, limit }, filter);
+    console.log('[Server Action] getProductsWithDiscountsAction called', { page, limit, filter, discountRule });
+    const result = await getProductsAction(page, limit, filter);
+    console.log('[Server Action] getProductsAction result:', { success: result.success, error: result.error, dataLength: result.data?.data?.length });
     
-    // Apply discount calculations to each product
-    const productsWithDiscounts = result.data.map((product: any) => {
-      const discountedPrice = service.calculateDiscount(product, 1, discountRule);
+    if (!result.success) {
+      return result;
+    }
+    
+    // Apply discount calculations if rule provided
+    const productsWithDiscounts = result.data.data.map((product: any) => {
+      if (!discountRule) {
+        return product;
+      }
+      
+      const discount = discountRule.type === 'percentage' 
+        ? (product.price * discountRule.value) / 100
+        : discountRule.value;
+      
       return {
         ...product,
         originalPrice: product.price,
-        discountedPrice,
-        discount: product.price - discountedPrice,
-        discountPercentage: discountRule ? 
-          ((product.price - discountedPrice) / product.price * 100).toFixed(0) : '0'
+        discountedPrice: Math.max(0, product.price - discount),
+        discount,
+        discountPercentage: discountRule.type === 'percentage' ? discountRule.value : 0
       };
     });
     
     return {
       success: true,
       data: {
-        ...result,
+        ...result.data,
         data: productsWithDiscounts
       }
     };
   } catch (error) {
+    console.error('[Server Action] getProductsWithDiscountsAction error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch products'
     };
   }
+}
+
+/**
+ * Stub functions for compatibility - not implemented for DummyJSON
+ */
+export async function checkStockAction(productId: string, quantity: number) {
+  return { success: true, data: { available: true } };
+}
+
+export async function calculateDiscountAction(
+  productId: string,
+  quantity: number,
+  rule?: any
+) {
+  const result = await getProductByIdAction(productId);
+  if (!result.success || !result.data) {
+    return { success: false, error: 'Product not found' };
+  }
+  
+  const product = result.data;
+  const discount = rule?.type === 'percentage' 
+    ? (product.price * rule.value) / 100
+    : rule?.value || 0;
+  
+  return {
+    success: true,
+    data: {
+      originalPrice: product.price * quantity,
+      discountedPrice: (product.price - discount) * quantity,
+      savings: discount * quantity
+    }
+  };
 }
