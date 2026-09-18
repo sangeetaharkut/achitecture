@@ -12,6 +12,7 @@ import { Link } from '@/i18n/routing';
 import { useProduct } from '@/features/products/hooks/useProducts';
 import { formatPriceForLocale } from '@/lib/i18n-price-format';
 import { addToCartAction } from '@/features/cart/actions/cart.actions';
+import { ProductChart } from './ProductChart';
 
 interface ProductDetailClientProps {
   productId: string;
@@ -205,6 +206,12 @@ export default function I18nProductDetailClient({ productId }: ProductDetailClie
             <p>• Secure checkout</p>
           </div>
         </div>
+      </div>
+
+      {/* Product Analytics Chart - Third-party script loaded on page load */}
+      <div className="mt-12 pt-8 border-t">
+        <h2 className="text-2xl font-bold mb-6">Customer Feedback Analytics</h2>
+        <ProductChart productName={product.name} productRating={product.rating} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@
 
 import { useTranslations } from 'next-intl';
 import { I18nProductList } from '@/features/products/components/I18nProductList';
+import { HeavyProductRecommendations } from './HeavyProductRecommendations';
 import { DiscountRule } from '@/features/products/types/product.types';
 
 export default function ProductsPage() {
@@ -25,6 +26,9 @@ export default function ProductsPage() {
           Browse our collection with 10% discount!
         </p>
       </div>
+
+      {/* Heavy component that delays LCP */}
+      <HeavyProductRecommendations />
 
       <I18nProductList itemsPerPage={12} discountRule={discountRule} />
     </div>
