@@ -1,6 +1,6 @@
 /**
  * Product Server Actions
- * Server-side functions that call DummyJSON API
+ * Server-side functions that call DummyJSON API with retry logic
  */
 
 'use server';
@@ -8,6 +8,44 @@
 import { ProductFilter } from '../types/product.types';
 
 const DUMMYJSON_API = 'https://dummyjson.com';
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 1000;
+
+// Disable certificate verification for self-signed certificates in development
+if (process.env.NODE_ENV === 'development') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
+/**
+ * Fetch with retry logic for handling rate limits (429) and temporary errors
+ */
+async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 0): Promise<Response> {
+  try {
+    const response = await fetch(url, options);
+    
+    // Handle rate limiting
+    if (response.status === 429) {
+      if (retries < MAX_RETRIES) {
+        const delay = RETRY_DELAY_MS * Math.pow(2, retries); // Exponential backoff
+        console.log(`[Rate Limited] Retry ${retries + 1}/${MAX_RETRIES} after ${delay}ms`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithRetry(url, options, retries + 1);
+      } else {
+        console.error('[Rate Limited] Max retries exceeded');
+      }
+    }
+    
+    return response;
+  } catch (error) {
+    if (retries < MAX_RETRIES) {
+      const delay = RETRY_DELAY_MS * Math.pow(2, retries);
+      console.log(`[Fetch Error] Retry ${retries + 1}/${MAX_RETRIES} after ${delay}ms`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retries + 1);
+    }
+    throw error;
+  }
+}
 
 /**
  * Map DummyJSON product to our Product type
@@ -50,7 +88,7 @@ export async function getProductsAction(
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
     
-    const response = await fetch(url, { 
+    const response = await fetchWithRetry(url, { 
       next: { revalidate: 3600 },
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +129,7 @@ export async function getProductsAction(
  */
 export async function getProductByIdAction(id: string) {
   try {
-    const response = await fetch(`${DUMMYJSON_API}/products/${id}`, {
+    const response = await fetchWithRetry(`${DUMMYJSON_API}/products/${id}`, {
       next: { revalidate: 3600 }
     });
     
@@ -114,7 +152,7 @@ export async function getProductByIdAction(id: string) {
  */
 export async function searchProductsAction(query: string) {
   try {
-    const response = await fetch(`${DUMMYJSON_API}/products/search?q=${encodeURIComponent(query)}`, {
+    const response = await fetchWithRetry(`${DUMMYJSON_API}/products/search?q=${encodeURIComponent(query)}`, {
       next: { revalidate: 3600 }
     });
     
@@ -140,7 +178,7 @@ export async function searchProductsAction(query: string) {
  */
 export async function getCategoriesAction() {
   try {
-    const response = await fetch(`${DUMMYJSON_API}/products/categories`, {
+    const response = await fetchWithRetry(`${DUMMYJSON_API}/products/categories`, {
       next: { revalidate: 86400 } // Cache for 24 hours
     });
     
@@ -175,7 +213,7 @@ export async function getProductsWithDiscountsAction(
     const result = await getProductsAction(page, limit, filter);
     console.log('[Server Action] getProductsAction result:', { success: result.success, error: result.error, dataLength: result.data?.data?.length });
     
-    if (!result.success) {
+    if (!result.success || !result.data) {
       return result;
     }
     
