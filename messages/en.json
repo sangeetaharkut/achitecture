@@ -32,6 +32,7 @@
     "noProducts": "No products found",
     "searchPlaceholder": "Search products...",
     "quantity": "Quantity",
+    "loading": "Loading...",
     "added": "✓ Added to cart!",
     "error": "Failed to add to cart",
     "available": "{count} available",

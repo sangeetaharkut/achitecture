@@ -2,6 +2,7 @@
  * Heavy Product Analytics Dashboard Component
  * Multiple heavy third-party charting libraries loaded from CDN
  * NOW WITH: Proper error handling, timeouts, and Suspense support
+ * Intentionally blocks rendering to create 5+ second LCP delay with CLS
  */
 
 'use client';
@@ -17,6 +18,24 @@ interface ProductChartProps {
 const generateLargeTableData = () => {
   const data = [];
   for (let i = 0; i < 100; i++) { // Reduced from 1000 for better performance
+// Extremely heavy CPU work with bounded memory to avoid Turbopack/runtime crashes
+const generateHeavyAnalytics = (productName: string) => {
+  let checksum = 0;
+  
+  // Large synchronous workload that keeps LCP high without allocating huge arrays
+  for (let i = 1; i <= 18000000; i++) {
+    const base = Math.sin(i) * Math.cos(i) * Math.log(i + 1);
+    const mixed = base + Math.sqrt(i % 1000) + (productName.length % 7);
+    checksum += (mixed * (i % 13)) / (1 + (i % 17));
+  }
+
+  return checksum;
+};
+
+// Generate large dataset for table rendering (creates DOM and CLS)
+const generateLargeTableData = () => {
+  const data = [];
+  for (let i = 0; i < 1000; i++) {
     data.push({
       id: i,
       date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -109,6 +128,65 @@ export function ProductChart({ productName, productRating = 4.5 }: ProductChartP
         const ctx = canvas.getContext('2d');
         if (ctx) {
           try {
+  const [tableData] = useState(() => generateLargeTableData());
+
+  useEffect(() => {
+    // Heavy computation BEFORE loading charts - blocks the main thread
+    const analytics = generateHeavyAnalytics(productName);
+    
+    const loadScripts = async () => {
+      try {
+        // Load Chart.js (100+ KB) - synchronously
+        await new Promise<void>((resolve) => {
+          const chartScript = document.createElement('script');
+          chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+          chartScript.async = false;
+          chartScript.onload = () => resolve();
+          document.head.appendChild(chartScript);
+        });
+
+        // Load Plotly (2.5+ MB!) - massive library, synchronously
+        await new Promise<void>((resolve) => {
+          const plotlyScript = document.createElement('script');
+          plotlyScript.src = 'https://cdn.plot.ly/plotly-2.26.0.min.js';
+          plotlyScript.async = false;
+          plotlyScript.onload = () => resolve();
+          document.head.appendChild(plotlyScript);
+        });
+
+        // Load D3.js (heavy DOM manipulation library)
+        await new Promise<void>((resolve) => {
+          const d3Script = document.createElement('script');
+          d3Script.src = 'https://d3js.org/d3.v7.min.js';
+          d3Script.async = false;
+          d3Script.onload = () => resolve();
+          document.head.appendChild(d3Script);
+        });
+
+        // Load Vega (additional charting library)
+        await new Promise<void>((resolve) => {
+          const vegaScript = document.createElement('script');
+          vegaScript.src = 'https://cdn.jsdelivr.net/npm/vega@5.27.0/build/vega.min.js';
+          vegaScript.async = false;
+          vegaScript.onload = () => resolve();
+          document.head.appendChild(vegaScript);
+        });
+
+        // Load Vega-Lite
+        await new Promise<void>((resolve) => {
+          const vegaLiteScript = document.createElement('script');
+          vegaLiteScript.src = 'https://cdn.jsdelivr.net/npm/vega-lite@5.17.0/build/vega-lite.min.js';
+          vegaLiteScript.async = false;
+          vegaLiteScript.onload = () => resolve();
+          document.head.appendChild(vegaLiteScript);
+        });
+
+        // Render Doughnut Chart with Chart.js
+        if (chartRef.current && (window as any).Chart) {
+          const canvas = document.createElement('canvas');
+          chartRef.current.appendChild(canvas);
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
             new (window as any).Chart(ctx, {
               type: 'doughnut',
               data: {
@@ -148,6 +226,12 @@ export function ProductChart({ productName, productRating = 4.5 }: ProductChartP
       if (lineChartRef.current && (window as any).Plotly) {
         try {
           const monthlyData = Array.from({ length: 12 }, (_, i) => ({ // Reduced from 36
+          }
+        }
+
+        // Render Line Chart with Plotly (very heavy rendering)
+        if (lineChartRef.current && (window as any).Plotly) {
+          const monthlyData = Array.from({ length: 36 }, (_, i) => ({
             month: `M${i + 1}`,
             sales: Math.floor(Math.random() * 5000) + 1000,
             views: Math.floor(Math.random() * 50000) + 5000,
@@ -160,7 +244,8 @@ export function ProductChart({ productName, productRating = 4.5 }: ProductChartP
             name: 'Sales',
             type: 'scatter',
             mode: 'lines+markers',
-            line: { color: '#3b82f6', width: 2 },
+            line: { color: '#3b82f6', width: 3 },
+            marker: { size: 8 },
           };
 
           const trace2 = {

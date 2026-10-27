@@ -11,11 +11,14 @@ const DUMMYJSON_API = 'https://dummyjson.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
 
+<<<<<<< HEAD
 // Disable certificate verification for self-signed certificates in development
 if (process.env.NODE_ENV === 'development') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
+=======
+>>>>>>> a5de2d9a8518817c86f8f68526423bf8ff96ffbe
 /**
  * Fetch with retry logic for handling rate limits (429) and temporary errors
  */

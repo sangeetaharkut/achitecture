@@ -23,6 +23,7 @@ import { formatPriceForLocale } from '@/lib/i18n-price-format';
 import { addToCartAction } from '@/features/cart/actions/cart.actions';
 import { SimpleCharts } from './SimpleCharts';
 import { QuantitySelector } from './QuantitySelector';
+import { ProductChart } from './ProductChart';
 
 interface ProductDetailClientProps {
   productId: string;
